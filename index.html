@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You ❤️</title>
+    <base target="_self">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@preline/preline@2.0.0/dist/preline.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes sprinkle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .envelope-container {
+            perspective: 1000px;
+            position: relative;
+            z-index: 10;
+        }
+        .envelope {
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .envelope-front, .envelope-back, .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform-origin: top;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .envelope-front {
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            border-radius: 8px 8px 0 0;
+            z-index: 3;
+            transform: rotateX(0deg);
+        }
+        .envelope-back {
+            background: linear-gradient(135deg, #f9a8d4 0%, #f472b6 100%);
+            border-radius: 8px;
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-flap {
+            background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 100%);
+            border-radius: 8px 8px 0 0;
+            height: 50%;
+            transform-origin: bottom;
+            z-index: 2;
+            transform: rotateX(0deg);
+        }
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        .envelope.open .envelope-front {
+            transform: translateY(-50%) rotateX(180deg);
+        }
+        .letter {
+            transform-origin: center;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s;
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+        .envelope.open .letter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .bg-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .heart {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s linear infinite;
+        }
+        .sprinkle {
+            position: absolute;
+            z-index: 100;
+            animation: sprinkle 3s linear forwards;
+            pointer-events: none;
+        }
+        .seal {
+            position: absolute;
+            bottom: -15px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background: #f43f5e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 4;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-rose-50 to-pink-50 dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-300 overflow-hidden">
+    <!-- Background elements -->
+    <div class="bg-hearts">
+        <div class="heart text-rose-200 text-4xl" style="top: 10%; left: 20%; animation-delay: 0s;">❤️</div>
+        <div class="heart text-pink-200 text-3xl" style="top: 30%; left: 70%; animation-delay: 2s;">❤️</div>
+        <div class="heart text-rose-200 text-5xl" style="top: 60%; left: 10%; animation-delay: 4s;">❤️</div>
+        <div class="heart text-pink-200 text-2xl" style="top: 80%; left: 80%; animation-delay: 6s;">❤️</div>
+        <div class="heart text-rose-200 text-6xl" style="top: 20%; left: 50%; animation-delay: 8s;">❤️</div>
+    </div>
+
+    <div class="max-w-md w-full text-center relative z-10">
+        <h1 class="text-4xl font-serif text-rose-600 dark:text-rose-300 mb-8">For My Love</h1>
+        
+        <div class="envelope-container w-72 h-48 mx-auto mb-8">
+            <div class="envelope relative w-full h-full cursor-pointer" id="envelope">
+                <div class="envelope-front flex items-center justify-center">
+                    <i class="fas fa-heart text-white text-4xl heartbeat"></i>
+                </div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-back"></div>
+                <div class="seal">
+                    <i class="fas fa-heart text-xs"></i>
+                </div>
+                
+                <!-- Letter -->
+                <div class="letter absolute -top-48 left-1/2 -translate-x-1/2 w-72 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl border border-rose-100 dark:border-gray-700">
+                    <div class="text-left">
+                        <p class="font-serif text-gray-700 dark:text-gray-200 mb-4">
+                            My dearest love,<br><br>
+                            In a universe of infinite stars,<br>
+                            You shine brighter than them all.<br><br>
+                            Every moment with you feels like a dream,<br>
+                            And I never want to wake up.<br><br>
+                            Will you make me the happiest person alive<br>
+                            and be my forever?
+                        </p>
+                        <div class="flex justify-center mt-6">
+                            <button id="yesBtn" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-2 rounded-full font-medium transition-all transform hover:scale-105 mr-3">
+                                Yes, forever!
+                            </button>
+                            <button id="noBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-full font-medium transition-all">
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="text-gray-600 dark:text-gray-300 mt-8 animate-pulse">Click the envelope to open</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const envelope = document.getElementById('envelope');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            let opened = false;
+            
+            // Envelope toggle
+            envelope.addEventListener('click', function(e) {
+                if (e.target === noBtn || e.target === yesBtn) return;
+                
+                envelope.classList.toggle('open');
+                
+                if (!opened && envelope.classList.contains('open')) {
+                    createSprinkles();
+                    opened = true;
+                }
+            });
+            
+            // Create celebration sprinkles
+            function createSprinkles() {
+                const sprinkleIcons = ['❤️', '✨', '🌸', '💖', '🥰'];
+                const container = document.querySelector('body');
+                
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const sprinkle = document.createElement('div');
+                        sprinkle.className = 'sprinkle text-2xl';
+                        sprinkle.innerHTML = sprinkleIcons[Math.floor(Math.random() * sprinkleIcons.length)];
+                        sprinkle.style.left = Math.random() * 100 + 'vw';
+                        sprinkle.style.top = '-30px';
+                        sprinkle.style.animationDuration = (2 + Math.random() * 3) + 's';
+                        sprinkle.style.animationDelay = (Math.random() * 0.5) + 's';
+                        container.appendChild(sprinkle);
+                        
+                        setTimeout(() => {
+                            sprinkle.remove();
+                        }, 3000);
+                    }, i * 100);
+                }
+            }
+            
+            // Button interactions
+            yesBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                document.querySelector('.letter p').innerHTML = `
+                    <span class="text-rose-600 dark:text-rose-400 font-bold text-xl">You've made me the happiest person in the world!</span>
+                    <br><br>
+                    I promise to cherish you, honor you, and love you<br>
+                    more each day than the day before.<br><br>
+                    Through all of life's adventures and quiet moments,<br>
+                    my heart will always belong to you.<br><br>
+                    Forever and always, yours ❤️
+                `;
+                document.querySelector('.letter .flex').remove();
+                
+                // Bigger celebration
+                createSprinkles();
+                createSprinkles();
+                
+                // Change envelope to golden
+                document.querySelector('.envelope-front').style.background = 'linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%)';
+                document.querySelector('.envelope-flap').style.background = 'linear-gradient(135deg, #fde68a 0%, #fcd34d 100%)';
+                document.querySelector('.envelope-back').style.background = 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)';
+            });
+            
+            noBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const responses = [
+                    'Are you sure?',
+                    'Really sure?',
+                    'Think again!',
+                    'You might regret this!',
+                    'Last chance!',
+                    'Okay, I\'ll ask again later...'
+                ];
+                noBtn.textContent = responses[Math.floor(Math.random() * responses.length)];
+                noBtn.classList.add('transform', 'hover:scale-105');
+                noBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                noBtn.classList.add('bg-rose-100', 'hover:bg-rose-200', 'text-rose-600');
+                
+                // Make the yes button bigger each time
+                yesBtn.textContent = ['YES!', 'PLEASE!', 'I LOVE YOU!', 'MARRY ME!', 'FOREVER!'][Math.floor(Math.random() * 5)];
+                const currentSize = parseInt(window.getComputedStyle(yesBtn).fontSize);
+                yesBtn.style.fontSize = (currentSize + 2) + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
